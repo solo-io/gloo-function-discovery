@@ -78,6 +78,12 @@
   version = "0.3.2"
 
 [[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "28452fcdec4e44348d2af0d91d1e9e38da3a9e0a"
@@ -102,6 +108,12 @@
   version = "v2.0.1"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/solo-io/glue"
   packages = [
@@ -112,6 +124,12 @@
     "pkg/platform/kube/crd/solo.io/v1"
   ]
   revision = "a49dca32bfb0ac89489d1ab3be2525dbe21a48ca"
+
+[[projects]]
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "7b2c5ac9fc04fc5efafb60700713d4fa609b777b"
+  version = "v0.0.1"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -218,7 +236,10 @@
   name = "k8s.io/apiextensions-apiserver"
   packages = [
     "pkg/apis/apiextensions",
-    "pkg/apis/apiextensions/v1beta1"
+    "pkg/apis/apiextensions/v1beta1",
+    "pkg/client/clientset/clientset",
+    "pkg/client/clientset/clientset/scheme",
+    "pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
   ]
   revision = "b357563e8dd364d1be52dbdc8457cd65badc427b"
 
@@ -290,6 +311,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c90bf09a4c20271420f98b05cd1d9b988db8f22be937d142b435437c21434dcd"
+  inputs-digest = "4189614e44af2134ea5399da3b38d816e9a9e8c521921b3178b4a229c67a19da"
   solver-name = "gps-cdcl"
   solver-version = 1
