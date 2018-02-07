@@ -1,9 +1,14 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/pkg/errors"
+	"github.com/solo-io/glue-discovery/pkg/kube"
+	"github.com/solo-io/glue-discovery/pkg/server"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/rest"
 )
@@ -18,7 +23,7 @@ func startCmd() *cobra.Command {
 			if err != nil {
 				return errors.Wrap(err, "unable to get client configuration")
 			}
-			start(cfg, port)
+			start(cfg, port, namespace)
 			return nil
 		},
 	}
@@ -26,7 +31,23 @@ func startCmd() *cobra.Command {
 	return cmd
 }
 
-func start(cfg *rest.Config, port int) {
-	// get list of sources for funcctions
-	fmt.Println("starting server at port ", port)
+func start(cfg *rest.Config, port int, namespace string) {
+	// get list of sources for functions
+	// k8s client
+	upstreamInterface, err := kube.UpstreamInterface(cfg, namespace)
+	if err != nil {
+		log.Fatalf("Unable to get client to K8S %q\n", err)
+	}
+	server := &server.Server{UpstreamRepo: upstreamInterface, Port: port}
+	log.Println("Listening on ", port)
+	stop := make(chan struct{})
+	server.Start(stop)
+	waitSignal(stop)
+}
+
+func waitSignal(stop chan struct{}) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	<-sigs
+	close(stop)
 }

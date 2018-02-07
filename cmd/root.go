@@ -8,6 +8,7 @@ import (
 
 var (
 	kubeConfig string
+	namespace  string
 )
 
 func RootCmd() *cobra.Command {
@@ -16,6 +17,7 @@ func RootCmd() *cobra.Command {
 		Short: "Glue Function Discovery service",
 	}
 	root.PersistentFlags().StringVar(&kubeConfig, "kubeconf", "", "Path to K8S config. Needed for out-of-cluster")
+	root.PersistentFlags().StringVarP(&namespace, "namespace", "n", "default", "K8S namespace to use")
 	root.AddCommand(registerCmd())
 	root.AddCommand(startCmd())
 	return root
