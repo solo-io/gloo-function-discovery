@@ -56,7 +56,10 @@ func TestUpdaterIsCalledIntially(t *testing.T) {
 		return nil
 	}
 	awsPoller := NewAWSPoller(f, u)
-	awsPoller.AddUpdateRegion(Region{Name: "us-east-1"})
+	awsPoller.AddUpdateRegion(Region{
+		ID:   "test",
+		Name: "us-east-1",
+	})
 
 	awsPoller.Start(1*time.Millisecond, stop)
 	<-stop
@@ -82,7 +85,10 @@ func TestUpdaterIsNotCalledIfLambdasDonotChange(t *testing.T) {
 		return nil
 	}
 	awsPoller := NewAWSPoller(f, u)
-	region := Region{Name: "us-east-1", Lambdas: lambdas}
+	region := Region{
+		ID:      "test",
+		Name:    "us-east-1",
+		Lambdas: lambdas}
 	awsPoller.AddUpdateRegion(region)
 
 	awsPoller.Start(1*time.Millisecond, stop)

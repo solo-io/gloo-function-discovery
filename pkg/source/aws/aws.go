@@ -3,6 +3,8 @@ package aws
 import (
 	"log"
 	"time"
+
+	"k8s.io/apimachinery/pkg/util/wait"
 )
 
 // TODO(ashish) - when adding next source abstract this
@@ -16,6 +18,7 @@ type AccessToken struct {
 
 // Region represents the AWS region and Lambdas in the region
 type Region struct {
+	ID      string
 	Name    string
 	Token   AccessToken
 	Lambdas []Lambda
@@ -49,7 +52,7 @@ func NewAWSPoller(f Fetcher, u Updater) *awsPoller {
 }
 
 func (a *awsPoller) AddUpdateRegion(region Region) {
-	existing, exists := a.repo.get(region.Name)
+	existing, exists := a.repo.get(region.ID)
 	if exists {
 		region.Lambdas = existing.Lambdas
 	}
@@ -61,18 +64,7 @@ func (a *awsPoller) RemoveRegion(regionName string) {
 }
 
 func (a *awsPoller) Start(pollPeriod time.Duration, stop chan struct{}) {
-	ticker := time.NewTicker(pollPeriod)
-	go func() {
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				a.run()
-			case <-stop:
-				return
-			}
-		}
-	}()
+	go func() { wait.Until(a.run, pollPeriod, stop) }()
 }
 
 func (a *awsPoller) run() {
@@ -85,7 +77,9 @@ func (a *awsPoller) run() {
 		}
 
 		if diff(newLambdas, r.Lambdas) {
-			updated := Region{Name: r.Name,
+			updated := Region{
+				ID:      r.ID,
+				Name:    r.Name,
 				Token:   r.Token,
 				Lambdas: newLambdas}
 			if err := a.updater(updated); err != nil {
