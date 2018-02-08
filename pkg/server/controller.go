@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/pkg/errors"
@@ -11,7 +12,6 @@ import (
 	utilrt "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 )
@@ -22,14 +22,16 @@ const (
 	resyncDelay = 5 * time.Minute
 )
 
-type handler interface {
+type Handler interface {
+	Update(*solov1.Upstream)
+	Remove(*solov1.Upstream)
 }
 
 type controller struct {
-	clientset    kubernetes.Interface
-	queue        workqueue.RateLimitingInterface
-	informer     cache.SharedIndexInformer
-	eventHandler handler
+	repo     UpstreamRepository
+	queue    workqueue.RateLimitingInterface
+	informer cache.SharedIndexInformer
+	handlers []Handler
 }
 
 func newController(upstreamRepo UpstreamRepository) *controller {
@@ -64,7 +66,11 @@ func newController(upstreamRepo UpstreamRepository) *controller {
 		},
 	})
 
-	return &controller{queue: queue, informer: informer}
+	return &controller{repo: upstreamRepo, queue: queue, informer: informer}
+}
+
+func (c *controller) AddHandler(h Handler) {
+	c.handlers = append(c.handlers, h)
 }
 
 func (c *controller) Run(stop chan struct{}) {
@@ -76,7 +82,8 @@ func (c *controller) Run(stop chan struct{}) {
 	if !cache.WaitForCacheSync(stop, c.informer.HasSynced) {
 		utilrt.HandleError(fmt.Errorf("Timed out waiting for caches to sync"))
 	}
-	wait.Until(c.runWorker, time.Second, stop)
+	go func() { wait.Until(c.runWorker, time.Second, stop) }()
+	log.Println("Controller started")
 }
 
 func (c *controller) runWorker() {
@@ -104,15 +111,35 @@ func (c *controller) processNextItem() bool {
 }
 
 func (c *controller) processItem(key string) error {
+	log.Println("processing: " + key)
 	obj, exists, err := c.informer.GetIndexer().GetByKey(key)
 	if err != nil {
 		return errors.Wrapf(err, "error fetching object with key %s from store", key)
 	}
 	if !exists {
-		// remove this upstream from our list of sources
-		fmt.Println("removed from fetch list - ", key)
+		for _, h := range c.handlers {
+			h.Remove(obj.(*solov1.Upstream))
+		}
 		return nil
 	}
-	fmt.Println("updated fetch list with - ", key, obj)
+	for _, h := range c.handlers {
+		h.Update(obj.(*solov1.Upstream))
+	}
 	return nil
+}
+
+func (c *controller) get(key string) (*solov1.Upstream, bool, error) {
+	o, b, e := c.informer.GetIndexer().GetByKey(key)
+	if e != nil {
+		return nil, false, e
+	}
+	if !b {
+		return nil, false, nil
+	}
+	return o.(*solov1.Upstream), b, nil
+}
+
+func (c *controller) set(u *solov1.Upstream) error {
+	_, err := c.repo.Update(u)
+	return err
 }

@@ -14,4 +14,8 @@ type Server struct {
 func (s *Server) Start(stop chan struct{}) {
 	ctrlr := newController(s.UpstreamRepo)
 	ctrlr.Run(stop)
+
+	aws := newAWSHandler(ctrlr)
+	ctrlr.AddHandler(aws)
+	aws.Start(stop)
 }

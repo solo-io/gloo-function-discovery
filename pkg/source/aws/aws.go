@@ -31,27 +31,27 @@ type Lambda struct {
 }
 
 // Fetcher gets collection of Lambdas for given region
-type Fetcher func(string, AccessToken) ([]Lambda, error)
+type FetcherFunc func(string, AccessToken) ([]Lambda, error)
 
 // Updater updates changes in Lambdas; for example saves
 // it in CRDs
-type Updater func(Region) error
+type UpdaterFunc func(Region) error
 
-type awsPoller struct {
+type AWSPoller struct {
 	repo    *memRepo
-	fetcher Fetcher
-	updater Updater
+	fetcher FetcherFunc
+	updater UpdaterFunc
 }
 
-func NewAWSPoller(f Fetcher, u Updater) *awsPoller {
-	return &awsPoller{
+func NewAWSPoller(f FetcherFunc, u UpdaterFunc) *AWSPoller {
+	return &AWSPoller{
 		repo:    newRepo(),
 		fetcher: f,
 		updater: u,
 	}
 }
 
-func (a *awsPoller) AddUpdateRegion(region Region) {
+func (a *AWSPoller) AddUpdateRegion(region Region) {
 	existing, exists := a.repo.get(region.ID)
 	if exists {
 		region.Lambdas = existing.Lambdas
@@ -59,16 +59,18 @@ func (a *awsPoller) AddUpdateRegion(region Region) {
 	a.repo.set(region)
 }
 
-func (a *awsPoller) RemoveRegion(regionName string) {
-	a.repo.delete(regionName)
+func (a *AWSPoller) RemoveRegion(regionID string) {
+	a.repo.delete(regionID)
 }
 
-func (a *awsPoller) Start(pollPeriod time.Duration, stop chan struct{}) {
+func (a *AWSPoller) Start(pollPeriod time.Duration, stop chan struct{}) {
 	go func() { wait.Until(a.run, pollPeriod, stop) }()
+	log.Println("AWS Poller started")
 }
 
-func (a *awsPoller) run() {
+func (a *AWSPoller) run() {
 	regions := a.repo.regions()
+	log.Printf("polling aws for %d regions\n", len(regions))
 	for _, r := range regions {
 		newLambdas, err := a.fetcher(r.Name, r.Token)
 		if err != nil {
