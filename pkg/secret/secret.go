@@ -29,7 +29,7 @@ type SecretRepo struct {
 // TODO(ashish) - replace with the Secret watcher in Glue so we get
 //                other secret stores beside K8S for free
 func NewSecretRepo(cfg *rest.Config) (*SecretRepo, error) {
-	secretRepo := &SecretRepo{}
+	secretRepo := &SecretRepo{repo: make(map[string]Secret)}
 	kubeClient, err := kubernetes.NewForConfig(cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create client for k8s")

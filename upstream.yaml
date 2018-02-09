@@ -7,7 +7,7 @@ spec:
     type: aws
     spec:
       region: us-east-1
-      credential: pointer
+      credential: aws-e2e-secret
     functions:
     - name: f:v1
       spec:

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/base64"
 	"fmt"
 	"log"
 	"time"
@@ -53,17 +52,7 @@ func newAWSHandler(c *controller, s *secret.SecretRepo) awsHandler {
 		if !exists {
 			return nil, fmt.Errorf("Unable to get credential referenced by %s", tokenRef)
 		}
-		var id []byte
-		_, err := base64.StdEncoding.Decode(id, data[keyIDKey])
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to decode token id")
-		}
-		var secret []byte
-		_, err = base64.StdEncoding.Decode(secret, data[secretKey])
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to decode token")
-		}
-		token := aws.AccessToken{ID: string(id), Secret: string(secret)}
+		token := aws.AccessToken{ID: string(data[keyIDKey]), Secret: string(data[secretKey])}
 		return aws.AWSFetcher(region, token)
 	}
 	poller := aws.NewAWSPoller(fetcher, updater)
