@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/solo-io/glue-discovery/pkg/secret"
+
 	"github.com/pkg/errors"
 	"github.com/solo-io/glue-discovery/pkg/source/aws"
 	apiv1 "github.com/solo-io/glue/pkg/api/types/v1"
@@ -18,10 +20,11 @@ import (
 // need to be aware of any data type outside the package
 type awsHandler struct {
 	controller *controller
+	secretRepo *secret.SecretRepo
 	poller     *aws.AWSPoller
 }
 
-func newAWSHandler(c *controller) awsHandler {
+func newAWSHandler(c *controller, s *secret.SecretRepo) awsHandler {
 	updater := func(r aws.Region) error {
 		upstream, exists, err := c.get(r.ID)
 		if err != nil {
@@ -35,7 +38,18 @@ func newAWSHandler(c *controller) awsHandler {
 		log.Println("updating upstream ", r.ID)
 		return c.set(upstream)
 	}
-	poller := aws.NewAWSPoller(aws.AWSFetcher, updater)
+	fetcher := func(region, tokenRef string) ([]aws.Lambda, error) {
+		// data, exists := s.Get(tokenRef)
+		// if !exists {
+		// 	return nil, fmt.Errorf("Unable to get credential referenced by %s", tokenRef)
+		// }
+		// token := aws.AccessToken{ID: string(data["id"]), Secret: string(data["secret"])}
+		token := aws.AccessToken{
+			ID:     os.Getenv("AWS_ACCESS_KEY_ID"),
+			Secret: os.Getenv("AWS_SECRET_ACCESS_KEY")}
+		return aws.AWSFetcher(region, token)
+	}
+	poller := aws.NewAWSPoller(fetcher, updater)
 	return awsHandler{controller: c, poller: poller}
 }
 
@@ -47,16 +61,16 @@ func (a awsHandler) Remove(u *solov1.Upstream) {
 	a.poller.RemoveRegion(toID(u))
 }
 
-func (a awsHandler) Start(stop chan struct{}) {
+func (a awsHandler) Start(stop <-chan struct{}) {
 	a.poller.Start(1*time.Minute, stop)
 }
 
 func toRegion(u *solov1.Upstream) aws.Region {
 	r := aws.Region{
-		ID:      toID(u),
-		Name:    u.Spec.Spec["region"].(string),
-		Token:   toToken(""), //u.Spec.Spec["token"].(string)),
-		Lambdas: toLambdas(u.Spec.Functions),
+		ID:       toID(u),
+		Name:     u.Spec.Spec["region"].(string),
+		TokenRef: toTokenRef(u),
+		Lambdas:  toLambdas(u.Spec.Functions),
 	}
 	return r
 }
@@ -64,11 +78,9 @@ func toRegion(u *solov1.Upstream) aws.Region {
 func toID(u *solov1.Upstream) string {
 	return fmt.Sprintf("%s/%s", u.Namespace, u.Name)
 }
-func toToken(s string) aws.AccessToken {
-	return aws.AccessToken{
-		ID:     os.Getenv("AWS_ACCESS_KEY_ID"),
-		Secret: os.Getenv("AWS_SECRET_ACCESS_KEY"),
-	}
+
+func toTokenRef(u *solov1.Upstream) string {
+	return fmt.Sprintf("%s/%s", u.Namespace, u.Spec.Spec["credential"].(string))
 }
 
 func toLambdas(functions []apiv1.Function) []aws.Lambda {

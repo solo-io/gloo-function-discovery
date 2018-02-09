@@ -8,6 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/glue-discovery/pkg/kube"
+	"github.com/solo-io/glue-discovery/pkg/secret"
 	"github.com/solo-io/glue-discovery/pkg/server"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/rest"
@@ -36,9 +37,18 @@ func start(cfg *rest.Config, port int, namespace string) {
 	// k8s client
 	upstreamInterface, err := kube.UpstreamInterface(cfg, namespace)
 	if err != nil {
-		log.Fatalf("Unable to get client to K8S %q\n", err)
+		log.Fatalf("Unable to get client to K8S for monitoring upstreams %q\n", err)
 	}
-	server := &server.Server{UpstreamRepo: upstreamInterface, Port: port}
+
+	secretRepo, err := secret.NewSecretRepo(cfg)
+	if err != nil {
+		log.Fatalf("Unable to setup monitoring of secrets %q\n", err)
+	}
+	server := &server.Server{
+		UpstreamRepo: upstreamInterface,
+		SecretRepo:   secretRepo,
+		Port:         port,
+	}
 	log.Println("Listening on ", port)
 	stop := make(chan struct{})
 	server.Start(stop)

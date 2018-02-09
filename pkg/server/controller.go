@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/solo-io/glue/pkg/platform/kube/crd/client/clientset/versioned/typed/solo.io/v1"
 	solov1 "github.com/solo-io/glue/pkg/platform/kube/crd/solo.io/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -22,19 +23,22 @@ const (
 	resyncDelay = 5 * time.Minute
 )
 
+// Handler represents the interface for anything that is
+// interested in listening to Upstream events
+// TODO(ashish) - rename to Subscriber
 type Handler interface {
 	Update(*solov1.Upstream)
 	Remove(*solov1.Upstream)
 }
 
 type controller struct {
-	repo     UpstreamRepository
+	repo     v1.UpstreamInterface
 	queue    workqueue.RateLimitingInterface
 	informer cache.SharedIndexInformer
 	handlers []Handler
 }
 
-func newController(upstreamRepo UpstreamRepository) *controller {
+func newController(upstreamRepo v1.UpstreamInterface) *controller {
 	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 	lw := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -73,7 +77,7 @@ func (c *controller) AddHandler(h Handler) {
 	c.handlers = append(c.handlers, h)
 }
 
-func (c *controller) Run(stop chan struct{}) {
+func (c *controller) Run(stop <-chan struct{}) {
 	defer utilrt.HandleCrash()
 	defer c.queue.ShutDown()
 
@@ -82,7 +86,7 @@ func (c *controller) Run(stop chan struct{}) {
 	if !cache.WaitForCacheSync(stop, c.informer.HasSynced) {
 		utilrt.HandleError(fmt.Errorf("Timed out waiting for caches to sync"))
 	}
-	go func() { wait.Until(c.runWorker, time.Second, stop) }()
+	go wait.Until(c.runWorker, time.Second, stop)
 	log.Println("Controller started")
 }
 

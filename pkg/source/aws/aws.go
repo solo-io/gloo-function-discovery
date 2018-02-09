@@ -18,10 +18,10 @@ type AccessToken struct {
 
 // Region represents the AWS region and Lambdas in the region
 type Region struct {
-	ID      string
-	Name    string
-	Token   AccessToken
-	Lambdas []Lambda
+	ID       string
+	Name     string
+	TokenRef string
+	Lambdas  []Lambda
 }
 
 // Lambda represents AWS Lambda, each qualifier is treated as separate Lambda
@@ -31,7 +31,7 @@ type Lambda struct {
 }
 
 // Fetcher gets collection of Lambdas for given region
-type FetcherFunc func(string, AccessToken) ([]Lambda, error)
+type FetcherFunc func(string, string) ([]Lambda, error)
 
 // Updater updates changes in Lambdas; for example saves
 // it in CRDs
@@ -63,8 +63,8 @@ func (a *AWSPoller) RemoveRegion(regionID string) {
 	a.repo.delete(regionID)
 }
 
-func (a *AWSPoller) Start(pollPeriod time.Duration, stop chan struct{}) {
-	go func() { wait.Until(a.run, pollPeriod, stop) }()
+func (a *AWSPoller) Start(pollPeriod time.Duration, stop <-chan struct{}) {
+	go wait.Until(a.run, pollPeriod, stop)
 	log.Println("AWS Poller started")
 }
 
@@ -72,7 +72,7 @@ func (a *AWSPoller) run() {
 	regions := a.repo.regions()
 	log.Printf("polling aws for %d regions\n", len(regions))
 	for _, r := range regions {
-		newLambdas, err := a.fetcher(r.Name, r.Token)
+		newLambdas, err := a.fetcher(r.Name, r.TokenRef)
 		if err != nil {
 			log.Printf("Unable to get lambdas for %s, %q\n", r.Name, err)
 			continue
@@ -80,10 +80,10 @@ func (a *AWSPoller) run() {
 
 		if diff(newLambdas, r.Lambdas) {
 			updated := Region{
-				ID:      r.ID,
-				Name:    r.Name,
-				Token:   r.Token,
-				Lambdas: newLambdas}
+				ID:       r.ID,
+				Name:     r.Name,
+				TokenRef: r.TokenRef,
+				Lambdas:  newLambdas}
 			if err := a.updater(updated); err != nil {
 				log.Printf("unable to update change in Lambdas for %s: %q\n", r.Name, err)
 				continue
