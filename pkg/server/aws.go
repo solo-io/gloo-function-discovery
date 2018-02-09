@@ -21,6 +21,8 @@ const (
 
 	functionNameKey = "FunctionName"
 	qualifierKey    = "Qualifier"
+
+	awsUpstreamType = "aws"
 )
 
 // adapter between aws poller and what controller expects
@@ -60,7 +62,9 @@ func newAWSHandler(c *controller, s *secret.SecretRepo) awsHandler {
 }
 
 func (a awsHandler) Update(u *solov1.Upstream) {
-	a.poller.AddUpdateRegion(toRegion(u))
+	if u.Spec.Type == awsUpstreamType {
+		a.poller.AddUpdateRegion(toRegion(u))
+	}
 }
 
 func (a awsHandler) Remove(u *solov1.Upstream) {

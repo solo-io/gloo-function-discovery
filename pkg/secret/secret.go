@@ -57,8 +57,8 @@ func NewSecretRepo(cfg *rest.Config) (*SecretRepo, error) {
 func (s *SecretRepo) Run(stop <-chan struct{}) {
 	defer utilrt.HandleCrash()
 	go s.factory.Start(stop)
-	s.factory.WaitForCacheSync(stop)
 	go s.informer.Run(stop)
+	s.factory.WaitForCacheSync(stop)
 	log.Println("Started monitoring secrets")
 }
 func (s *SecretRepo) Get(key string) (Secret, bool) {

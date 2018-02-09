@@ -1,4 +1,4 @@
-package kube
+package server
 
 import (
 	"github.com/pkg/errors"

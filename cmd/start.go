@@ -7,7 +7,6 @@ import (
 	"syscall"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/glue-discovery/pkg/kube"
 	"github.com/solo-io/glue-discovery/pkg/secret"
 	"github.com/solo-io/glue-discovery/pkg/server"
 	"github.com/spf13/cobra"
@@ -33,9 +32,7 @@ func startCmd() *cobra.Command {
 }
 
 func start(cfg *rest.Config, port int, namespace string) {
-	// get list of sources for functions
-	// k8s client
-	upstreamInterface, err := kube.UpstreamInterface(cfg, namespace)
+	upstreamInterface, err := server.UpstreamInterface(cfg, namespace)
 	if err != nil {
 		log.Fatalf("Unable to get client to K8S for monitoring upstreams %q\n", err)
 	}
