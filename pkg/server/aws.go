@@ -1,9 +1,9 @@
 package server
 
 import (
+	"encoding/base64"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/solo-io/glue-discovery/pkg/secret"
@@ -12,6 +12,16 @@ import (
 	"github.com/solo-io/glue-discovery/pkg/source/aws"
 	apiv1 "github.com/solo-io/glue/pkg/api/types/v1"
 	solov1 "github.com/solo-io/glue/pkg/platform/kube/crd/solo.io/v1"
+)
+
+const (
+	regionKey     = "region"
+	credentialKey = "credential"
+	keyIDKey      = "keyid"
+	secretKey     = "secretkey"
+
+	functionNameKey = "FunctionName"
+	qualifierKey    = "Qualifier"
 )
 
 // adapter between aws poller and what controller expects
@@ -39,14 +49,21 @@ func newAWSHandler(c *controller, s *secret.SecretRepo) awsHandler {
 		return c.set(upstream)
 	}
 	fetcher := func(region, tokenRef string) ([]aws.Lambda, error) {
-		// data, exists := s.Get(tokenRef)
-		// if !exists {
-		// 	return nil, fmt.Errorf("Unable to get credential referenced by %s", tokenRef)
-		// }
-		// token := aws.AccessToken{ID: string(data["id"]), Secret: string(data["secret"])}
-		token := aws.AccessToken{
-			ID:     os.Getenv("AWS_ACCESS_KEY_ID"),
-			Secret: os.Getenv("AWS_SECRET_ACCESS_KEY")}
+		data, exists := s.Get(tokenRef)
+		if !exists {
+			return nil, fmt.Errorf("Unable to get credential referenced by %s", tokenRef)
+		}
+		var id []byte
+		_, err := base64.StdEncoding.Decode(id, data[keyIDKey])
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to decode token id")
+		}
+		var secret []byte
+		_, err = base64.StdEncoding.Decode(secret, data[secretKey])
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to decode token")
+		}
+		token := aws.AccessToken{ID: string(id), Secret: string(secret)}
 		return aws.AWSFetcher(region, token)
 	}
 	poller := aws.NewAWSPoller(fetcher, updater)
@@ -68,7 +85,7 @@ func (a awsHandler) Start(stop <-chan struct{}) {
 func toRegion(u *solov1.Upstream) aws.Region {
 	r := aws.Region{
 		ID:       toID(u),
-		Name:     u.Spec.Spec["region"].(string),
+		Name:     u.Spec.Spec[regionKey].(string),
 		TokenRef: toTokenRef(u),
 		Lambdas:  toLambdas(u.Spec.Functions),
 	}
@@ -80,15 +97,15 @@ func toID(u *solov1.Upstream) string {
 }
 
 func toTokenRef(u *solov1.Upstream) string {
-	return fmt.Sprintf("%s/%s", u.Namespace, u.Spec.Spec["credential"].(string))
+	return fmt.Sprintf("%s/%s", u.Namespace, u.Spec.Spec[credentialKey].(string))
 }
 
 func toLambdas(functions []apiv1.Function) []aws.Lambda {
 	lambdas := make([]aws.Lambda, len(functions))
 	for i, f := range functions {
 		lambdas[i] = aws.Lambda{
-			Name:      f.Spec["FunctionName"].(string),
-			Qualifier: f.Spec["Qualifier"].(string),
+			Name:      f.Spec[functionNameKey].(string),
+			Qualifier: f.Spec[qualifierKey].(string),
 		}
 	}
 	return lambdas
@@ -100,8 +117,8 @@ func toFunctions(lambdas []aws.Lambda) []apiv1.Function {
 		functions[i] = apiv1.Function{
 			Name: l.Name + ":" + l.Qualifier,
 			Spec: map[string]interface{}{
-				"FunctionName": l.Name,
-				"Qualifier":    l.Qualifier,
+				functionNameKey: l.Name,
+				qualifierKey:    l.Qualifier,
 			},
 		}
 	}
