@@ -23,8 +23,7 @@ type Server struct {
 func (s *Server) Start(resyncPeriod time.Duration, stop <-chan struct{}) {
 	ctrlr := newController(resyncPeriod, s.UpstreamRepo)
 
-	source.FetcherRegistry["aws"] = aws.GetAWSFetcher(s.SecretRepo)
-	//source.FetcherRegistry["swagger"] = swagger.SwaggerFetcher
+	source.FetcherRegistry.Add(aws.GetAWSFetcher(s.SecretRepo))
 
 	updater := func(u source.Upstream) error {
 		crd, exists, err := ctrlr.get(u.ID)

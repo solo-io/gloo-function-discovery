@@ -15,11 +15,30 @@ type Function struct {
 	Spec map[string]interface{}
 }
 
-// FetcherFunc represents the function that knows how to discover
+// FunctionFetcher represents the function that knows how to discover
 // functions for the given upstream
-type FetcherFunc func(u *Upstream) ([]Function, error)
+type FunctionFetcher interface {
+	Fetch(u *Upstream) ([]Function, error)
+	CanFetch(u *Upstream) bool
+}
 
 var (
-	// FetcherRegistry maintains a list of discovery
-	FetcherRegistry = make(map[string]FetcherFunc)
+	FetcherRegistry = fetcherRegistry{}
 )
+
+type fetcherRegistry struct {
+	registry []FunctionFetcher
+}
+
+func (fr *fetcherRegistry) Add(f FunctionFetcher) {
+	fr.registry = append(fr.registry, f)
+}
+
+func (fr *fetcherRegistry) Fetcher(u *Upstream) FunctionFetcher {
+	for _, f := range fr.registry {
+		if f.CanFetch(u) {
+			return f
+		}
+	}
+	return nil
+}

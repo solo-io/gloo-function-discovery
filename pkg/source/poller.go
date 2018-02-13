@@ -41,13 +41,14 @@ func (p *Poller) run() {
 	upstreams := p.repo.upstreams()
 	log.Printf("polling %d upstreams...", len(upstreams))
 	for _, u := range upstreams {
-		fetcher, exists := FetcherRegistry[u.Type]
-		if !exists {
+		// TODO (ashish) instead of doing this everytime maintain a map of upstream to fetcher
+		fetcher := FetcherRegistry.Fetcher(&u)
+		if fetcher == nil {
 			log.Printf("Unable to find fetcher for %s", u.ID)
 			continue
 		}
 		// Runs fetchers in current Go routine; TODO(ashish) - use a worker pool
-		newFunctions, err := fetcher(&u)
+		newFunctions, err := fetcher.Fetch(&u)
 		if err != nil {
 			log.Printf("Unable to get functions for %s, %q\n", u.ID, err)
 			continue
