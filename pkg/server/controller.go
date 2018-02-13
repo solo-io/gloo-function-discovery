@@ -19,8 +19,7 @@ import (
 
 const (
 	// TODO (ashish) convert these into configurations
-	maxRetries  = 5
-	resyncDelay = 5 * time.Minute
+	maxRetries = 5
 )
 
 // Handler represents the interface for anything that is
@@ -38,7 +37,7 @@ type controller struct {
 	handlers []Handler
 }
 
-func newController(upstreamRepo v1.UpstreamInterface) *controller {
+func newController(resyncDelay time.Duration, upstreamRepo v1.UpstreamInterface) *controller {
 	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 	lw := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -54,18 +53,24 @@ func newController(upstreamRepo v1.UpstreamInterface) *controller {
 			key, err := cache.MetaNamespaceKeyFunc(obj)
 			if err == nil {
 				queue.Add(key)
+			} else {
+				log.Println("error handling add event in informer ", err)
 			}
 		},
 		UpdateFunc: func(old, new interface{}) {
 			key, err := cache.MetaNamespaceKeyFunc(new)
 			if err == nil {
 				queue.Add(key)
+			} else {
+				log.Println("error handling update event in informer ", err)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
 			key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
 			if err == nil {
 				queue.Add(key)
+			} else {
+				log.Println("error handling delete event in informer ", err)
 			}
 		},
 	})
