@@ -16,8 +16,8 @@ func (h *handler) Update(u *solov1.Upstream) {
 	h.poller.Update(toUpstream(u))
 }
 
-func (h *handler) Remove(u *solov1.Upstream) {
-	h.poller.Remove(toID(u))
+func (h *handler) Remove(ID string) {
+	h.poller.Remove(ID)
 }
 
 func toUpstream(u *solov1.Upstream) source.Upstream {

@@ -27,7 +27,7 @@ const (
 // TODO(ashish) - rename to Subscriber
 type Handler interface {
 	Update(*solov1.Upstream)
-	Remove(*solov1.Upstream)
+	Remove(string)
 }
 
 type controller struct {
@@ -83,15 +83,16 @@ func (c *controller) AddHandler(h Handler) {
 }
 
 func (c *controller) Run(stop <-chan struct{}) {
-	defer utilrt.HandleCrash()
-	defer c.queue.ShutDown()
-
 	go c.informer.Run(stop)
 	// wait for cache sync before starting
 	if !cache.WaitForCacheSync(stop, c.informer.HasSynced) {
 		utilrt.HandleError(fmt.Errorf("Timed out waiting for caches to sync"))
 	}
 	go wait.Until(c.runWorker, time.Second, stop)
+	go func() {
+		<-stop
+		c.queue.ShutDown()
+	}()
 	log.Println("Controller started")
 }
 
@@ -127,7 +128,7 @@ func (c *controller) processItem(key string) error {
 	}
 	if !exists {
 		for _, h := range c.handlers {
-			h.Remove(obj.(*solov1.Upstream))
+			h.Remove(key)
 		}
 		return nil
 	}
