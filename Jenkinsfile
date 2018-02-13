@@ -14,15 +14,13 @@ containers: [
         command: 'cat')
     ],
 envVars: [
-    secretEnvVar(key: 'AWS_ACCESS_KEY_ID', secretName: 'aws-e2e-secret', secretKey: 'keyid'),
-    secretEnvVar(key: 'AWS_SECRET_ACCESS_KEY', secretName: 'aws-e2e-secret', secretKey: 'secretkey'),
-    envVar(key: 'AWS_REGION', value: 'us-east-1'),
     envVar(key: 'IMAGE_NAME', value: imageName),
     envVar(key: 'DOCKER_CONFIG', value: '/etc/docker')
     ],
 volumes: [
     hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-    secretVolume(secretName: 'soloio-docker-hub', mountPath: '/etc/docker')
+    secretVolume(secretName: 'soloio-docker-hub', mountPath: '/etc/docker'),
+    secretVolume(secretName: 'soloio-github', mountPath: '/etc/github')
 ]) {
 
     properties([
@@ -45,11 +43,16 @@ volumes: [
                 echo 'Setting up workspace for Go...'
                 checkout scm
                 sh '''
+                    OLD_DIR=$PWD
+                    cp /etc/github/id_rsa $PWD
+                    chmod 400 $PWD/id_rsa
+                    GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
                     go get -u github.com/golang/dep/cmd/dep
                     mkdir ${GOPATH}/src/github.com/solo-io/
                     ln -s `pwd` ${GOPATH}/src/github.com/solo-io/glue-discovery
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
                     dep ensure -vendor-only
+                    rm $OLD_DIR/id_rsa
                 '''
             }
         }
