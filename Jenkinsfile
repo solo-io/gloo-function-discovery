@@ -1,5 +1,6 @@
 #!/usr/bin/env groovy
-def imageName = "docker.io/soloio/glue-discovery:" + ((env.BRANCH_NAME == "master") ? "latest" : env.BRANCH_NAME)
+def imageName = "docker.io/soloio/glue-discovery"
+def imageTag = (env.BRANCH_NAME == "master") ? "latest" : env.BRANCH_NAME
 podTemplate(label: 'glue-discovery-builder', 
 containers: [
     containerTemplate(
@@ -15,6 +16,7 @@ containers: [
     ],
 envVars: [
     envVar(key: 'IMAGE_NAME', value: imageName),
+    envVar(key: 'IMAGE_TAG', value: imageTag),
     envVar(key: 'DOCKER_CONFIG', value: '/etc/docker')
     ],
 volumes: [
@@ -63,7 +65,6 @@ volumes: [
                 echo 'Building...'
                 sh '''
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
-                    dep status
                     CGO_ENABLED=0 GOOS=linux go build
                 '''
             }
@@ -98,9 +99,10 @@ volumes: [
                     sh '''
                     cd docker
                     cp ../glue-discovery .
-                    echo ${IMAGE_NAME}
-                    docker build -t "${IMAGE_NAME}" .
-                    docker push "${IMAGE_NAME}"
+                    echo ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${HASH}
+                    docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" -t "${IMAGE_NAME}:${HASH}" .
+                    docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+                    docker push "${IMAGE_NAME}:${HASH}"
                     '''
                 }
             }
