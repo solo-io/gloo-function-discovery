@@ -56,6 +56,7 @@ volumes: [
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
                     dep ensure -vendor-only
                     rm $OLD_DIR/id_rsa
+                    git log -n 1 --pretty=format:%h >> hash.tmp
                 '''
             }
         }
@@ -97,7 +98,7 @@ volumes: [
                 container('docker') {
                     echo 'Publish'
                     sh '''
-                    export HASH=`git log -n 1 --pretty=format:%h`
+                    export HASH=`cat hash.tmp`
                     cd docker
                     cp ../glue-discovery .
                     echo ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${HASH}
