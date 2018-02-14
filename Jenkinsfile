@@ -97,6 +97,7 @@ volumes: [
                 container('docker') {
                     echo 'Publish'
                     sh '''
+                    export HASH=`git log -n 1 --pretty=format:%h`
                     cd docker
                     cp ../glue-discovery .
                     echo ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${HASH}
