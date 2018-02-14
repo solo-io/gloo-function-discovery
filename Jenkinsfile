@@ -43,10 +43,11 @@ volumes: [
                 echo 'Setting up workspace for Go...'
                 checkout scm
                 sh '''
-                    OLD_DIR=$PWD
+                    export OLD_DIR=$PWD
                     cp /etc/github/id_rsa $PWD
                     chmod 400 $PWD/id_rsa
-                    GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
+                    export GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
+                    git config --global url."git@github.com:".insteadOf "https://github.com"
                     go get -u github.com/golang/dep/cmd/dep
                     mkdir ${GOPATH}/src/github.com/solo-io/
                     ln -s `pwd` ${GOPATH}/src/github.com/solo-io/glue-discovery
