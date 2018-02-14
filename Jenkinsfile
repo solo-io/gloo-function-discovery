@@ -93,6 +93,8 @@ volumes: [
 
         stage('Publish') {
             if (env.BRANCH_NAME == 'master' || params.PUBLISH) {
+                // remember to create the repository in hub.docker.io and
+                // give soloiobot (which is in soloci team) access to write
                 container('docker') {
                     echo 'Publish'
                     sh '''
