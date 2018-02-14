@@ -5,7 +5,7 @@ podTemplate(label: 'glue-discovery-builder',
 containers: [
     containerTemplate(
         name: 'golang', 
-        image: 'golang:1.9.0', 
+        image: 'golang:1.9', 
         ttyEnabled: true, 
         command: 'cat'),
     containerTemplate(
@@ -46,6 +46,7 @@ volumes: [
                 checkout scm
                 sh '''
                     export OLD_DIR=$PWD
+                    ls -l /etc/github/id_rsa
                     cp /etc/github/id_rsa $PWD
                     chmod 400 $PWD/id_rsa
                     export GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
@@ -101,8 +102,8 @@ volumes: [
                     export HASH=`cat hash.tmp`
                     cd docker
                     cp ../glue-discovery .
-                    echo ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${HASH}
                     docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" -t "${IMAGE_NAME}:${HASH}" .
+                    cat /etc/docker
                     docker push "${IMAGE_NAME}:${IMAGE_TAG}"
                     docker push "${IMAGE_NAME}:${HASH}"
                     '''
