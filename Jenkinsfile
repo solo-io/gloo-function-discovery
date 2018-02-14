@@ -47,6 +47,7 @@ volumes: [
                 sh '''
                     export OLD_DIR=$PWD
                     ls -l /etc/github/id_rsa
+                    chmod 400 /etc/github/id_rsa
                     cp /etc/github/id_rsa $PWD
                     chmod 400 $PWD/id_rsa
                     export GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
@@ -57,7 +58,7 @@ volumes: [
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
                     dep ensure -vendor-only
                     rm $OLD_DIR/id_rsa
-                    git log -n 1 --pretty=format:%h >> hash.tmp
+                    git log -n 1 --pretty=format:%h > hash.tmp
                 '''
             }
         }
