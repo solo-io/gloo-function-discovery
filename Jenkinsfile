@@ -50,7 +50,7 @@ volumes: [
                     chmod 400 $PWD/id_rsa
                     export GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
                     git config --global url."git@github.com:".insteadOf "https://github.com"
-                    go get -u github.com/golang/dep/cmd/dep
+                    curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/vX.X.X/dep-linux-amd64 && chmod +x /usr/local/bin/dep
                     mkdir ${GOPATH}/src/github.com/solo-io/
                     ln -s `pwd` ${GOPATH}/src/github.com/solo-io/glue-discovery
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
