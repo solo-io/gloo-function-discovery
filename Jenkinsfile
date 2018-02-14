@@ -104,7 +104,8 @@ volumes: [
                     cd docker
                     cp ../glue-discovery .
                     docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" -t "${IMAGE_NAME}:${HASH}" .
-                    cat /etc/docker
+                    ls /etc/docker
+                    docker info
                     docker push "${IMAGE_NAME}:${IMAGE_TAG}"
                     docker push "${IMAGE_NAME}:${HASH}"
                     '''
