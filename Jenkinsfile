@@ -46,18 +46,14 @@ volumes: [
                 checkout scm
                 sh '''
                     export OLD_DIR=$PWD
-                    ls -l /etc/github/id_rsa
                     chmod 400 /etc/github/id_rsa
-                    cp /etc/github/id_rsa $PWD
-                    chmod 400 $PWD/id_rsa
-                    export GIT_SSH_COMMAND="ssh -i $PWD/id_rsa -o \'StrictHostKeyChecking no\'"
+                    export GIT_SSH_COMMAND="ssh -i /etc/github/id_rsa -o \'StrictHostKeyChecking no\'"
                     git config --global url."git@github.com:".insteadOf "https://github.com"
                     curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
                     mkdir -p ${GOPATH}/src/github.com/solo-io/
                     ln -s `pwd` ${GOPATH}/src/github.com/solo-io/glue-discovery
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
                     dep ensure -vendor-only
-                    rm $OLD_DIR/id_rsa
                     git log -n 1 --pretty=format:%h > hash.tmp
                 '''
             }
@@ -78,7 +74,7 @@ volumes: [
                 echo 'Testing....'
                 sh '''
                     cd ${GOPATH}/src/github.com/solo-io/glue-discovery
-                    go test  -race -cover `go list ./... | grep -v "e2e\\|demo"`
+                    go test  -race -cover `go list ./... | grep -v "e2e"`
                 '''
             }
         }
@@ -104,8 +100,6 @@ volumes: [
                     cd docker
                     cp ../glue-discovery .
                     docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" -t "${IMAGE_NAME}:${HASH}" .
-                    ls /etc/docker
-                    docker info
                     docker push "${IMAGE_NAME}:${IMAGE_TAG}"
                     docker push "${IMAGE_NAME}:${HASH}"
                     '''
