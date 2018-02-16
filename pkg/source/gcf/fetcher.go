@@ -13,6 +13,12 @@ import (
 	"google.golang.org/api/cloudfunctions/v1"
 )
 
+// Reference:
+// https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions/list
+// official client doesn't support google cloud functions
+// official golang client - https://github.com/GoogleCloudPlatform/google-cloud-go
+// auto generated client
+// https://github.com/google/google-api-go-client
 const (
 	credentialKey   = "credential"
 	projectIDKey    = "project"
