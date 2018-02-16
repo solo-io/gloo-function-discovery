@@ -1,8 +1,11 @@
 package gcf
 
 import (
-	"context"
 	"fmt"
+	"net/http"
+
+	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
 
 	"golang.org/x/oauth2/google"
 
@@ -38,26 +41,16 @@ func (g *gcfFetcher) CanFetch(u *source.Upstream) bool {
 }
 
 func (g *gcfFetcher) Fetch(u *source.Upstream) ([]source.Function, error) {
-	// secretRef := secretRef(u)
-	// data, exists := g.secretRepo.Get(secretRef)
-	// if !exists {
-	// 	return nil, fmt.Errorf("unable to get credential referenced by %s", secretRef)
-	// }
-	// fmt.Println(data)
-
-	//ctx = oauth.NewServiceAccountFromFile(jsonfile)
-	// jsonbytes, err := ioutil.ReadFile(serviceKeyFile)
-	// if err != nil {
-	// 	return nil, errors.Wrap(err, "unable to read servicekey")
-	// }
-	// ctx := oauth.NewServiceAccountFromKey(jsonbytes)
-	ctx := context.Background()
-	// relying on GOOGLE_APPLICATION_CREDENTIALS pointing to service key json file
-	oauthClient, err := google.DefaultClient(ctx, cloudfunctions.CloudPlatformScope)
+	secretRef := secretRef(u)
+	data, exists := g.secretRepo.Get(secretRef)
+	if !exists {
+		return nil, fmt.Errorf("unable to get credential referenced by %s", secretRef)
+	}
+	client, err := client(data)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get OAuth client")
 	}
-	gcf, err := cloudfunctions.New(oauthClient)
+	gcf, err := cloudfunctions.New(client)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to setup GCF service")
 	}
@@ -66,7 +59,7 @@ func (g *gcfFetcher) Fetch(u *source.Upstream) ([]source.Function, error) {
 	parent := fmt.Sprintf("projects/%s/locations/%s", projectID(u), locationID)
 	listCall := gcf.Projects.Locations.Functions.List(parent)
 	//listCall.Fields("functions(name,status,versionId,entryPoint,httpsTrigger/*)")
-	err = listCall.Pages(ctx, func(r *cloudfunctions.ListFunctionsResponse) error {
+	err = listCall.Pages(context.Background(), func(r *cloudfunctions.ListFunctionsResponse) error {
 		// handle each page of list functions
 		for _, f := range r.Functions {
 			// limiting to active functions only; should we include functions
@@ -122,4 +115,22 @@ func projectID(u *source.Upstream) string {
 		return ""
 	}
 	return v.(string)
+}
+
+func client(s secret.Secret) (*http.Client, error) {
+	// don't care about file name so take the first entry in the map
+	var b []byte
+	for _, v := range s {
+		b = v
+		break
+	}
+	if b == nil {
+		return nil, fmt.Errorf("credentials empty")
+	}
+	ctx := context.Background()
+	jwtConfig, err := google.JWTConfigFromJSON(b, cloudfunctions.CloudPlatformScope)
+	if err != nil {
+		return nil, err
+	}
+	return oauth2.NewClient(ctx, jwtConfig.TokenSource(ctx)), nil
 }
