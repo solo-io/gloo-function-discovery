@@ -10,8 +10,8 @@ import (
 	"golang.org/x/oauth2/google"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/glue-discovery/pkg/secret"
-	"github.com/solo-io/glue-discovery/pkg/source"
+	"github.com/solo-io/gloo-function-discovery/pkg/secret"
+	"github.com/solo-io/gloo-function-discovery/pkg/source"
 
 	"google.golang.org/api/cloudfunctions/v1"
 )

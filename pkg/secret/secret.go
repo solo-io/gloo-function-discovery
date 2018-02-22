@@ -26,7 +26,7 @@ type SecretRepo struct {
 
 // NewSecretRepo returns a repository for secrets that automatically
 // syncronizes with K8S
-// TODO(ashish) - replace with the Secret watcher in Glue so we get
+// TODO(ashish) - replace with the Secret watcher in Gloo so we get
 //                other secret stores beside K8S for free
 func NewSecretRepo(cfg *rest.Config) (*SecretRepo, error) {
 	secretRepo := &SecretRepo{repo: make(map[string]Secret)}

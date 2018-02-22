@@ -3,9 +3,9 @@ package server
 import (
 	"fmt"
 
-	"github.com/solo-io/glue-discovery/pkg/source"
-	apiv1 "github.com/solo-io/glue/pkg/api/types/v1"
-	solov1 "github.com/solo-io/glue/pkg/platform/kube/crd/solo.io/v1"
+	apiv1 "github.com/solo-io/gloo-api/pkg/api/types/v1"
+	"github.com/solo-io/gloo-function-discovery/pkg/source"
+	solov1 "github.com/solo-io/gloo/pkg/platform/kube/crd/solo.io/v1"
 )
 
 type handler struct {

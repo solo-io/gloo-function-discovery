@@ -1,6 +1,6 @@
 package source
 
-// TODO(ashish)  - map to glue v1 api objects
+// TODO(ashish)  - map to Gloo v1 api objects
 type Upstream struct {
 	ID        string
 	Namespace string

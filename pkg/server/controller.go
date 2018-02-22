@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/glue/pkg/platform/kube/crd/client/clientset/versioned/typed/solo.io/v1"
-	solov1 "github.com/solo-io/glue/pkg/platform/kube/crd/solo.io/v1"
+	"github.com/solo-io/gloo/pkg/platform/kube/crd/client/clientset/versioned/typed/solo.io/v1"
+	solov1 "github.com/solo-io/gloo/pkg/platform/kube/crd/solo.io/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilrt "k8s.io/apimachinery/pkg/util/runtime"
