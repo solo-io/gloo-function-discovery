@@ -13,8 +13,8 @@ var (
 
 func RootCmd() *cobra.Command {
 	root := &cobra.Command{
-		Use:   "glue-discovery",
-		Short: "Glue Function Discovery service",
+		Use:   "gloo-function-discovery",
+		Short: "Gloo Function Discovery service",
 	}
 	root.PersistentFlags().StringVar(&kubeConfig, "kubeconf", "", "Path to K8S config. Needed for out-of-cluster")
 	root.PersistentFlags().StringVarP(&namespace, "namespace", "n", "default", "K8S namespace to use")

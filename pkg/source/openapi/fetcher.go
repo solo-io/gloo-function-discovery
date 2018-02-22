@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
 
-	"github.com/solo-io/glue-discovery/pkg/source"
+	"github.com/solo-io/gloo-function-discovery/pkg/source"
 )
 
 func GetOpenAPIFetcher() *openapiFetcher {

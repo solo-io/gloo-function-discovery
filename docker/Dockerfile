@@ -1,5 +1,5 @@
 # deployment image
-FROM alpine:3.5
-ADD glue-discovery /
+FROM alpine:3.7
+ADD gloo-discovery /
 EXPOSE 8080
-CMD ["/glue-discovery", "start"]
+CMD ["/gloo-discovery", "start"]

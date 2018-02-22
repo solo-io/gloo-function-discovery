@@ -262,7 +262,6 @@
   version = "v0.8.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/solo-io/glue"
   packages = [
     "pkg/api/types/v1",
@@ -612,6 +611,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b4e61a32c0cf60343dfa536b183632c774eca5b39c697c569cb00bc6a9fe342a"
+  inputs-digest = "64540e781179cdab2a6f1d18fb148a19587ec8a3d8e8d46b87b058d095122d1b"
   solver-name = "gps-cdcl"
   solver-version = 1

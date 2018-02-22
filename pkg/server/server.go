@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/glue-discovery/pkg/secret"
-	"github.com/solo-io/glue-discovery/pkg/source"
-	"github.com/solo-io/glue-discovery/pkg/source/aws"
-	"github.com/solo-io/glue-discovery/pkg/source/gcf"
-	"github.com/solo-io/glue-discovery/pkg/source/openapi"
+	"github.com/solo-io/gloo-function-discovery/pkg/secret"
+	"github.com/solo-io/gloo-function-discovery/pkg/source"
+	"github.com/solo-io/gloo-function-discovery/pkg/source/aws"
+	"github.com/solo-io/gloo-function-discovery/pkg/source/gcf"
+	"github.com/solo-io/gloo-function-discovery/pkg/source/openapi"
 	apiv1 "github.com/solo-io/glue/pkg/api/types/v1"
 	"github.com/solo-io/glue/pkg/platform/kube/crd/client/clientset/versioned/typed/solo.io/v1"
 )

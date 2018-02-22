@@ -3,8 +3,8 @@ package aws
 import (
 	"fmt"
 
-	"github.com/solo-io/glue-discovery/pkg/secret"
-	"github.com/solo-io/glue-discovery/pkg/source"
+	"github.com/solo-io/gloo-function-discovery/pkg/secret"
+	"github.com/solo-io/gloo-function-discovery/pkg/source"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"

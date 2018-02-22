@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 
-	"github.com/solo-io/glue-discovery/pkg/source"
+	"github.com/solo-io/gloo-function-discovery/pkg/source"
 	apiv1 "github.com/solo-io/glue/pkg/api/types/v1"
 	solov1 "github.com/solo-io/glue/pkg/platform/kube/crd/solo.io/v1"
 )

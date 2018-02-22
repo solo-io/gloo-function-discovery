@@ -21,8 +21,8 @@
 
 
 [[constraint]]
-  branch = "master"
   name = "github.com/solo-io/glue"
+  revision = "a49dca32bfb0ac89489d1ab3be2525dbe21a48ca"
 
 [[constraint]]
   name = "k8s.io/client-go"

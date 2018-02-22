@@ -39,7 +39,7 @@ func register(cfg *rest.Config) {
 		return
 	}
 	upstream := &v1beta1.CustomResourceDefinition{
-		ObjectMeta: metav1.ObjectMeta{Name: "upstreams.glue.solo.io"},
+		ObjectMeta: metav1.ObjectMeta{Name: "upstreams.gloo.solo.io"},
 		Spec: v1beta1.CustomResourceDefinitionSpec{
 			Group:   kubev1.GroupName,
 			Version: kubev1.Version,

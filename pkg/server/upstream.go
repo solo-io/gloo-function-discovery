@@ -9,10 +9,10 @@ import (
 
 // UpstreamInterface provides an interfce to talk to Upstreams represented by CRDs in K8S
 func UpstreamInterface(cfg *rest.Config, namespace string) (v1.UpstreamInterface, error) {
-	glueClient, err := clientset.NewForConfig(cfg)
+	glooClient, err := clientset.NewForConfig(cfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to get Glue client")
+		return nil, errors.Wrap(err, "unable to get Gloo client")
 	}
-	gluev1 := glueClient.GlueV1()
-	return gluev1.Upstreams(namespace), nil
+	gloov1 := glooClient.GlueV1()
+	return gloov1.Upstreams(namespace), nil
 }

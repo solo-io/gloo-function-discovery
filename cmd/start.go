@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/glue-discovery/pkg/secret"
-	"github.com/solo-io/glue-discovery/pkg/server"
+	"github.com/solo-io/gloo-function-discovery/pkg/secret"
+	"github.com/solo-io/gloo-function-discovery/pkg/server"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/rest"
 )
