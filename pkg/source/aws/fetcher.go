@@ -77,7 +77,7 @@ func secretRef(u *source.Upstream) string {
 	if !exists {
 		return ""
 	}
-	return u.Namespace + "/" + v.(string)
+	return v.(string)
 }
 
 func region(u *source.Upstream) string {

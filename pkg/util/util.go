@@ -12,16 +12,17 @@ import (
 
 func GetStorageClient(c *cobra.Command) (storage.Interface, error) {
 	var cfg *rest.Config
+	var err error
 	flags := c.InheritedFlags()
 	kubeConfig, _ := flags.GetString("kubeconfig")
 	namespace, _ := flags.GetString("namespace")
 	if kubeConfig != "" {
-		cfg, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
+		cfg, err = clientcmd.BuildConfigFromFlags("", kubeConfig)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		cfg, err := rest.InClusterConfig()
+		cfg, err = rest.InClusterConfig()
 		if err != nil {
 			return nil, err
 		}

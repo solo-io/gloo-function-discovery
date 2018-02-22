@@ -6,8 +6,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+var kubeConfig string
+
 func RootCmd() *cobra.Command {
-	var kubeConfig string
 	var namespace string
 	var syncPeriod int
 

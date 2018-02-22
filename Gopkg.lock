@@ -57,8 +57,8 @@
     "service/lambda",
     "service/sts"
   ]
-  revision = "adeb60566bc8c9202b0f1be7e3a675beedbc11f0"
-  version = "v1.13.2"
+  revision = "146470bc6ef7d6667ef2e9d4ae54f19e98b8ba82"
+  version = "v1.13.3"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -124,7 +124,7 @@
   branch = "master"
   name = "github.com/go-openapi/swag"
   packages = ["."]
-  revision = "84f4bee7c0a6db40e3166044c7983c1c32125429"
+  revision = "0d03ad0b6405ada874d59d97c416b5cf4234e154"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -285,22 +285,19 @@
   version = "v0.8.0"
 
 [[projects]]
-  branch = "proto"
+  branch = "master"
   name = "github.com/solo-io/gloo"
   packages = [
     "pkg/log",
-    "pkg/platform/kube/crd/client/clientset/versioned",
-    "pkg/platform/kube/crd/client/clientset/versioned/typed/solo.io/v1",
-    "pkg/platform/kube/crd/solo.io/v1",
     "pkg/protoutil"
   ]
-  revision = "582ad04edccc0a187b9e485dbddf4afeef1b960c"
+  revision = "bbd9fff65cdd00b64c55ecb9344518f3cb256fb3"
 
 [[projects]]
   branch = "master"
   name = "github.com/solo-io/gloo-api"
   packages = ["pkg/api/types/v1"]
-  revision = "d4a2acba50c037ce1a0637c1a7563ada46004470"
+  revision = "adfafb38b670925fecc64342f1bba7ed6bf9d052"
 
 [[projects]]
   branch = "master"
@@ -314,19 +311,7 @@
     "crd/solo.io/v1",
     "internal/crud"
   ]
-  revision = "00415184cdd9e5f87e10c1ffbd62ef7bf66c2e4c"
-
-[[projects]]
-  branch = "proto"
-  name = "github.com/solo-io/glue"
-  packages = [
-    "internal/reporter",
-    "pkg/api/types/v1",
-    "pkg/platform/kube/crd/client/clientset/versioned/scheme",
-    "pkg/platform/kube/crd/client/clientset/versioned/typed/solo.io/v1",
-    "pkg/platform/kube/crd/solo.io/v1"
-  ]
-  revision = "582ad04edccc0a187b9e485dbddf4afeef1b960c"
+  revision = "9884fc33dc177200df7e662329e871fbc8a6f1a6"
 
 [[projects]]
   name = "github.com/spf13/cobra"
@@ -353,7 +338,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "432090b8f568c018896cd8a0fb0345872bbac6ce"
+  revision = "49796115aa4b964c318aad4f3084fdb41e9aa067"
 
 [[projects]]
   branch = "master"
@@ -387,7 +372,7 @@
     "unix",
     "windows"
   ]
-  revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
+  revision = "c1138c84af3a9927aee1a1b8b7ce06c9b7ea52bc"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -667,8 +652,7 @@
     "util/cert",
     "util/flowcontrol",
     "util/homedir",
-    "util/integer",
-    "util/workqueue"
+    "util/integer"
   ]
   revision = "78700dec6369ba22221b72770783300f143df150"
   version = "v6.0.0"
@@ -676,6 +660,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "56ef32ce0abe3cf8e63fc9c0d44774d4f824b3ed9922d0a387fd4b18d25133ae"
+  inputs-digest = "e08017f5f5fdde1578108d44912f1eb7ca9b7350ae726633ed66fa4f33d2a021"
   solver-name = "gps-cdcl"
   solver-version = 1

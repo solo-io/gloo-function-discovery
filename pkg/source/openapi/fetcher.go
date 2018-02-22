@@ -25,7 +25,7 @@ type openapiFetcher struct{}
 func (f *openapiFetcher) Fetch(u *source.Upstream) ([]source.Function, error) {
 	oURL := openapiURL(u)
 	if oURL == nil {
-		return nil, fmt.Errorf("unable to find Open API Docs URL for %s", u.ID)
+		return nil, fmt.Errorf("unable to find Open API Docs URL for %s", u.Name)
 	}
 
 	spec, err := loadSwaggerSpec(oURL)
