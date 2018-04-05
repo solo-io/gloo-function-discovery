@@ -58,8 +58,8 @@
     "service/lambda",
     "service/sts"
   ]
-  revision = "74ca63959be8b9a9a24cd86eaaea8bf99de8022d"
-  version = "v1.13.25"
+  revision = "827d8280a5c6590c21e2fc0a6a8b3242ee6e33f0"
+  version = "v1.13.29"
 
 [[projects]]
   name = "github.com/d4l3k/messagediff"
@@ -108,8 +108,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "6333e38ac20b8949a8dd68baa3650f4dee8f39f0"
-  version = "v1.33.0"
+  revision = "5e9692864e22d02ac79e2fa499cffb00520b4fea"
+  version = "v1.34.0"
 
 [[projects]]
   branch = "master"
@@ -151,13 +151,13 @@
   branch = "master"
   name = "github.com/go-openapi/strfmt"
   packages = ["."]
-  revision = "6ba31556a6c60db8615afb9d8eddae7aae15eb48"
+  revision = "257eae87ae3c3ade55160a4e338e1ca125314810"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/swag"
   packages = ["."]
-  revision = "ceb469cb0fdf2d792f28d771bc05da6c606f55e5"
+  revision = "811b1089cde9dad18d4d0c2d09fbdbf28dbd27a5"
 
 [[projects]]
   branch = "master"
@@ -260,6 +260,12 @@
   revision = "bc372cc64f55abd91995ba3f219b380ffbc59e9d"
 
 [[projects]]
+  name = "github.com/hashicorp/consul"
+  packages = ["api"]
+  revision = "9a494b5fb9c86180a5702e29c485df1507a47198"
+  version = "v1.0.6"
+
+[[projects]]
   branch = "master"
   name = "github.com/hashicorp/errwrap"
   packages = ["."]
@@ -306,7 +312,13 @@
     "json/scanner",
     "json/token"
   ]
-  revision = "f40e974e75af4e271d97ce0fc917af5898ae7bda"
+  revision = "ef8a98b0bbce4a65b5aa4c368430a80ddc533168"
+
+[[projects]]
+  name = "github.com/hashicorp/serf"
+  packages = ["coordinate"]
+  revision = "d6574a5bb1226678d7010325fb6c985db20ee458"
+  version = "v0.8.1"
 
 [[projects]]
   name = "github.com/hashicorp/vault"
@@ -329,8 +341,8 @@
 [[projects]]
   name = "github.com/imdario/mergo"
   packages = ["."]
-  revision = "0d4b488675fdec1dde48751b05ab530cf0b630e1"
-  version = "v0.3.2"
+  revision = "9d5f1277e9a8ed20c3684bda8fde67c05628518c"
+  version = "v0.3.4"
 
 [[projects]]
   name = "github.com/inconshreveable/mousetrap"
@@ -554,7 +566,7 @@
     "pkg/secretwatcher/vault",
     "pkg/signals"
   ]
-  revision = "950fe44d5c27e24f2086191a4828084905794f77"
+  revision = "bb748e237a4758650bc1d2f089e7dc44a140c07d"
 
 [[projects]]
   branch = "master"
@@ -574,25 +586,28 @@
     "nats-streaming",
     "rest"
   ]
-  revision = "60b4c11b785f7f1921e2efd354d3d856a788e8b8"
+  revision = "7db929448712bab3553cabac35edecd0cd5671bf"
 
 [[projects]]
   branch = "master"
   name = "github.com/solo-io/gloo-storage"
   packages = [
     ".",
+    "consul",
     "crd",
     "crd/client/clientset/versioned",
     "crd/client/clientset/versioned/scheme",
     "crd/client/clientset/versioned/typed/solo.io/v1",
     "crd/solo.io/v1",
     "dependencies",
+    "dependencies/consul",
     "dependencies/file",
     "dependencies/kube",
     "file",
+    "internal/base",
     "internal/crud"
   ]
-  revision = "684b57cf078ca59aee4eb841c9b53d11d748be23"
+  revision = "e82a6f83118b58333265cb436d4a74c24e4d43ba"
 
 [[projects]]
   branch = "master"
@@ -603,7 +618,7 @@
     "helpers",
     "helpers/local"
   ]
-  revision = "1e982896c4c4dcdd8f5cf2ab88c435032a0ec7d3"
+  revision = "84a27ba0dd91c32854bbea759a80469b4e1b667b"
 
 [[projects]]
   branch = "master"
@@ -652,7 +667,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "12892e8c234f4fe6f6803f052061de9057903bb2"
+  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
 
 [[projects]]
   branch = "master"
@@ -670,7 +685,7 @@
     "lex/httplex",
     "trace"
   ]
-  revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
+  revision = "b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e"
 
 [[projects]]
   branch = "master"
@@ -682,7 +697,7 @@
     "jws",
     "jwt"
   ]
-  revision = "fdc9e635145ae97e6c2cb777c48305600cf515cb"
+  revision = "921ae394b9430ed4fb549668d7b087601bd60a81"
 
 [[projects]]
   branch = "master"
@@ -691,7 +706,7 @@
     "unix",
     "windows"
   ]
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
+  revision = "1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -736,7 +751,7 @@
     "googleapi",
     "googleapi/internal/uritemplates"
   ]
-  revision = "3072d9cd7f79a11909b84fdb7c9c8b9e60a57fbd"
+  revision = "3097bf831ede4a24e08a3316254e29ca726383e3"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -762,7 +777,7 @@
     "googleapis/api/annotations",
     "googleapis/rpc/status"
   ]
-  revision = "ab0870e398d5dd054b868c0db1481ab029b9a9f2"
+  revision = "aae13d27a44d62f039eeeb93e74e893886673932"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -793,8 +808,8 @@
     "tap",
     "transport"
   ]
-  revision = "1e2570b1b19ade82d8dbb31bba4e65e9f9ef5b34"
-  version = "v1.11.1"
+  revision = "d89cded64628466c4ab532d1f0ba5c220459ebe8"
+  version = "v1.11.2"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
@@ -1038,11 +1053,11 @@
   branch = "master"
   name = "k8s.io/kube-openapi"
   packages = ["pkg/util/proto"]
-  revision = "50ae88d24ede7b8bad68e23c805b5d3da5c8abaf"
+  revision = "cd0308977f05a0de033c0e8ce1860b317e360dca"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fcbaef83bd8e197f9ea41c986a63c549152e6d036c0687bff1fdd4779a8c4676"
+  inputs-digest = "efaf469da61ad6573a4640b93214e138762849a0ae5faeb9a271340786c76986"
   solver-name = "gps-cdcl"
   solver-version = 1
